@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang='cs-cz'>
+
+<head>
+	<meta http-equiv="content-type" content="text/html" ; charset="utf-8">
+	<link rel="stylesheet" href="pure-min.css">
+	<script type="text/javascript" src="./javascript.js"></script>
+	<script>
+		var loaded = 0;
+		function GetReadings() {
+			nocache = "&nocache";
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function () {
+				if (this.status == 200) {
+					if (this.responseXML != null) {
+						var count;
+						var num_an = this.responseXML.getElementsByTagName('reading').length;
+						for (count = 0; count < num_an; count++) {
+							document.getElementsByClassName("reading")[count].innerHTML =
+								this.responseXML.getElementsByTagName('reading')[count].childNodes[0].nodeValue;
+
+						}
+					}
+				}
+			}
+			if (loaded == 1) {
+				loaded = 0;
+				setTimeout('GetReadings()', 5000);
+				request.open("GET", "getXMLWifi", true);
+				request.send();
+			} else {
+				setTimeout('GetReadings()', 15000);
+				request.open("GET", "getXMLWifi", true);
+				request.send();
+			}
+		}
+		document.addEventListener('DOMContentLoaded', function () {
+			loaded = 1;
+			GetReadings();
+		}, false);
+
+	</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<style>
+		body {
+			padding-top: 20px;
+			max-width: 450px;
+			margin: auto;
+			display: block;
+			font-family: "Trebuchet MS", Arial;
+			padding-bottom: 20px;
+		}
+
+		.title {
+			text-align: center;
+			padding-top: 4px;
+			padding-bottom: 4px;
+		}
+
+		.pure-button {
+			width: 100%;
+		}
+
+		select,
+		input {
+			width: 100%;
+		}
+
+		.wrapper {
+			max-width: 95%;
+			margin: auto;
+		}
+
+		.border {
+			background-color: #f6f6f6;
+			border-radius: 10px;
+		}
+
+		h3 {
+			text-align: center;
+		}
+
+		.seznamWifi {
+			text-align: center;
+		}
+	</style>
+	<title>Meteostanice</title>
+</head>
+
+<body onload="zobrazCas()">
+	<div class="border">
+		<div class="wrapper">
+			<div class="title">
+				<h1>Meteostanice</h1>
+				<h3><span id="cas">...</span> <span id="rok">...</span></h3>
+			</div>
+
+			<FORM name="formular" class="pure-form pure-form-stacked" action='http://192.168.4.1/uloz' method='post'>
+				<div>
+					<b>Zabezpeceni stranky</b>
+					<fieldset>
+						<label for="www_username">Jmeno</label>
+						<input type="text" name="www_username" id="www_username" placeholder="4-32 znaku" minlength="4"
+							maxlength="32" autofocus required>
+						<label for="www_password">Heslo</label>
+						<input type="password" name="www_password" id="www_password" placeholder="8-32 znaku"
+							minlength="8" maxlength="32" required>
+					</fieldset>
+				</div>
+				<div>
+					<fieldset>
+						<label for="rezim">Volba rezimu</label>
+						<select name="rezim" id="rezim" onchange="zobrazStranku()">
+							<option value="1">Klient</option>
+							<option value="2">Server</option>
+						</select>
+					</fieldset>
+				</div>
+				<div id="udajePripojeni">
+					<b>Udaje k pripojeni</b>
+				</div>
+				<div id="udajeAP" style="display:none;">
+					<b>Udaje k vytvoreni AP</b>
+				</div>
+				<fieldset>
+					<label for="ssid_i">SSID</label>
+					<input type="text" name="ssid_i" id="ssid_i" placeholder="4-32 znaku" minlength="4" maxlength="32"
+						required />
+					<label for="password_i">Password</label>
+					<input type="password" name="password_i" id="password_i" placeholder="8-32 znaku" minlength="8"
+						maxlength="32" required />
+				</fieldset>
+				<div id="vyberRezimuZasilani">
+					<fieldset>
+						<label for="rezimZasilani">Zasilani dat</label>
+						<select name="rezimZasilani" id="rezimZasilani" onchange="zobrazStranku()">
+							<option value="1">Thingspeak</option>
+							<option value="2">Vlastni server</option>
+						</select>
+						<label for="intervalZasilani">Interval zasilani dat</label>
+						<select name="intervalZasilani" id="intervalZasilani">
+							<option value="1">1 minuta</option>
+							<option value="2">2 minuty</option>
+							<option value="3">3 minuty</option>
+							<option selected value="5">5 minut</option>
+							<option value="10">10 minut</option>
+							<option value="15">15 minut</option>
+						</select>
+					</fieldset>
+					</fieldset>
+				</div>
+				<div id="proThingspeak">
+					<fieldset>
+						<label for="channelID">Thingspeak Channel ID</label>
+						<input type="number" name="channelID" id="channelID" placeholder="3-10 cislic" min="1"
+							max="99999999" required />
+
+						<label for="apikey">Thingspeak API key</label>
+						<input type="text" name="apikey" id="apikey" placeholder="16 znaku" minlength="16"
+							maxlength="16" required />
+
+						<label for="channelID2">Thingspeak Channel ID2</label>
+						<input type="number" name="channelID2" id="channelID2" placeholder="3-10 cislic" min="1"
+							max="99999999" required />
+
+						<label for="apikey2">Thingspeak API key 2</label>
+						<input type="text" name="apikey2" id="apikey2" placeholder="16 znaku" minlength="16"
+							maxlength="16" required />
+					</fieldset>
+				</div>
+				<div id="proVlastniServer" style="display:none;">
+					<label for="vyberIP_HTTP">URL/IP adresa serveru</label>
+					<input type="text" name="url_ip" id="url_ip"
+						placeholder="http://example.com/station/ nebo xxx.xxx.xxx.xxx"
+						pattern="http?://.+[a-z0-9.-]+\.[a-z]{2,}/.+[a-z0-9.-]/|^((http:\/\/www\.|http:\/\/)?([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"></input>
+				</div>
+				<div id="proVlastniServer_zobrazeniNaStrance" style="display:none;">
+					<fieldset>
+						<label for="teplota_p1">Hloubka teplotniho cidla 1</label>
+						<input type="text" name="teplota_p1" id="teplota_p1" placeholder="-50 cm" maxlength="32" />
+						<label for="teplota_p2">Hloubka teplotniho cidla 2</label>
+						<input type="text" name="teplota_p2" id="teplota_p2" placeholder="-25 cm" maxlength="32" />
+						<label for="teplota_p3">Hloubka teplotniho cidla 3</label>
+						<input type="text" name="teplota_p3" id="teplota_p3" placeholder="-5 cm" maxlength="32" />
+						<label for="vlhkost_p1">Hloubka vlhkostniho cidla 1</label>
+						<input type="text" name="vlhkost_p1" id="vlhkost_p1" placeholder="-50 cm" maxlength="32" />
+						<label for="vlhkost_p2">Hloubka vlhkostniho cidla 2</label>
+						<input type="text" name="vlhkost_p2" id="vlhkost_p2" placeholder="-25 cm" maxlength="32" />
+						<label for="vlhkost_p3">Hloubka vlhkostniho cidla 3</label>
+						<input type="text" name="vlhkost_p3" id="vlhkost_p3" placeholder="-5 cm" maxlength="32" />
+					</fieldset>
+				</div>
+				<button type="submit" class="pure-button pure-button-primary">Uloz</button>
+			</form>
+			<h3>Seznam dostupnych siti</h3>
+			<div class="seznamWifi">
+				<span class="reading">...</span>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

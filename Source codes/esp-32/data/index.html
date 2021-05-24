@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs-cz">
+
+<head>
+  <meta http-equiv="content-type" content="text/html"; charset="utf-8">
+  <link rel="stylesheet" href="pure-min.css">
+  <title>Meteostanice</title>
+  <script>
+    function DisplayCurrentTime() {
+      var date = new Date();
+      var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+      time = hours + ":" + minutes + ":" + seconds;
+      var currentTime = document.getElementById("currentTime");
+      currentTime.innerHTML = time;
+    };
+    function GetReadings() {
+      nocache = "&nocache";
+      var request = new XMLHttpRequest();
+      request.onreadystatechange = function () {
+        if (this.status == 200) {
+          if (this.responseXML != null) {
+            var count;
+            var num_an = this.responseXML.getElementsByTagName('reading').length;
+            for (count = 0; count < num_an; count++) {
+              document.getElementsByClassName("reading")[count].innerHTML =
+                this.responseXML.getElementsByTagName('reading')[count].childNodes[0].nodeValue;
+            }
+            num_an = this.responseXML.getElementsByTagName('placeholder').length;
+            for (count = 0; count < num_an; count++) {
+              document.getElementsByClassName("placeholder")[count].innerHTML =
+                this.responseXML.getElementsByTagName('placeholder')[count].childNodes[0].nodeValue;
+            }
+            DisplayCurrentTime();
+          }
+        }
+
+      }
+      setTimeout('GetReadings()', 300000);
+      request.open("GET", "getXML", true);
+      request.send();
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      DisplayCurrentTime();
+      GetReadings();
+    }, false);
+  </script>
+  <style>
+    body {
+      text-align: center;
+      font-family: "Trebuchet MS", Arial;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    th {
+      padding: 16px;
+      background-color: #0044b1;
+      color: white;
+    }
+
+    tr {
+      border: 1px solid #ddd;
+      padding: 16px;
+    }
+
+    tr:nth-of-type(odd) {
+      background-color: rgb(242, 242, 242);
+    }
+
+    tr:hover {
+      background-color: #bcbcbc;
+    }
+
+    td {
+      border: none;
+      padding: 16px;
+    }
+
+    .buttonDiv {
+      margin-top: 1px;
+    }
+
+    .pure-button {
+      width:50%;
+    }
+
+
+  </style>
+</head>
+
+<body>
+  <h1>Meteostanice</h1>
+  <h3>Posledni aktualizace: <span id="currentTime"></span></h3>
+  <div style="overflow-x:auto;">
+  <table>
+    <tr>
+      <th>Velicina</th>
+      <th>Hodnota</th>
+    </tr>
+    <tr>
+      <td>Teplota</td>
+      <td><span class="reading">...</span> &deg;C</td>
+    </tr>
+    <tr>
+      <td>Vlhkost</td>
+      <td><span class="reading">...</span> %</td>
+    </tr>
+    <tr>
+      <td>Tlak</td>
+      <td><span class="reading">...</span> hPa</td>
+    </tr>
+    <tr>
+      <td>Rychlost vetru</td>
+      <td><span class="reading">...</span> km/h</td>
+    </tr>
+    <tr>
+      <td>Smer vetru</td>
+      <td><span class="reading">...</span></td>
+    </tr>
+    <tr>
+      <td>Mnozstvi srazek</td>
+      <td><span class="reading">...</span> mm/5 min</td>
+    </tr>
+    <tr>
+      <td>UV index</td>
+      <td><span class="reading">...</span></td>
+    </tr>
+    <tr>
+      <td>Teplota pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> &deg;C</td>
+    </tr>
+    <tr>
+      <td>Teplota pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> &deg;C</td>
+    </tr>
+    <tr>
+      <td>Teplota pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> &deg;C</td>
+    </tr>
+    <tr>
+      <td>Vlhkost pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> %</td>
+    </tr>
+    <tr>
+      <td>Vlhkost pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> %</td>
+    </tr>
+    <tr>
+      <td>Vlhkost pudy v <span class="placeholder">xx</span> cm</td>
+      <td><span class="reading">...</span> %</td>
+    </tr>
+    <tr>
+      <td>Napeti baterie</td>
+      <td><span class="reading">...</span> V</td>
+    </tr>
+  </table>
+</div>
+  <div class="pure-button-group buttonDiv">
+    <a class="pure-button" href="/json">JSON</a>
+    <a class="pure-button" href="/settings">Settings</a>
+  </div>
+</body>
+</html>

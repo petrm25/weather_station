@@ -1,0 +1,10 @@
+Number of parts to be printed on a 3D printer and then assembled
+
+1x Holder
+1x Cross
+1x Top plate
+1x Top plate bme280 holder
+1x Top cover plate UV sensor
+1x Bottom cover plate
+2x Bottom plate
+6x Middle plate
